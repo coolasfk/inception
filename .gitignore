@@ -1,0 +1,6 @@
+# Ignore Docker build files
+*.log
+__pycache__
+.env
+.vscode/
+docker-compose.override.yml
