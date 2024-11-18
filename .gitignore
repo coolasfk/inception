@@ -3,4 +3,5 @@
 __pycache__
 .env
 .vscode/
+secrets/
 docker-compose.override.yml

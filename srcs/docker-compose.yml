@@ -1,0 +1,58 @@
+version: '3.9'
+
+services:
+  mariadb:
+    build:
+      context: ./requirements/mariadb
+    container_name: mariadb
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - inception-network
+
+  wordpress:
+    build:
+      context: ./requirements/wordpress
+    container_name: wordpress
+    depends_on:
+      - mariadb
+    volumes:
+      - wordpress-data:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+    networks:
+      - inception-network
+
+  nginx:
+    build:
+      context: ./requirements/nginx
+    container_name: nginx
+    depends_on:
+      - wordpress
+    volumes:
+      - ./requirements/nginx/conf:/etc/nginx/conf.d
+      - nginx-data:/var/www/html
+    ports:
+      - "443:443"
+      - "80:80"
+    networks:
+      - inception-network
+
+volumes:
+  mariadb-data:  # Declare the MariaDB volume here
+    driver: local
+  wordpress-data:  # Declare the WordPress volume here
+    driver: local
+  nginx-data:
+    driver: local
+
+networks:
+  inception-network:
