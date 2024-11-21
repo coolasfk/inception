@@ -1,11 +1,11 @@
 all:
-	docker-compose up --build -d
+	docker-compose -f srcs/docker-compose.yml up --build -d
 
 clean:
-	docker-compose down
-	docker system prune -af
+	docker-compose -f srcs/docker-compose.yml down
+	docker system prune -af || true
 
 fclean: clean
-	docker volume rm mariadb-data wordpress-data
+	-docker volume rm mariadb-data wordpress-data nginx-data || true
 
 re: fclean all
