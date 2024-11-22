@@ -8,12 +8,12 @@ services:
     volumes:
       - mariadb-data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: evapass
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: evapass
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=evapass"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -21,18 +21,20 @@ services:
       - inception-network
 
   wordpress:
+    image: custom-wordpress
     build:
       context: ./requirements/wordpress
     container_name: wordpress
     depends_on:
       - mariadb
     volumes:
+      - ./requirements/wordpress/conf/wp-config.php:/var/www/html/wp-config.php
       - wordpress-data:/var/www/html
     environment:
-      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
-      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
-      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
-      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      DB_HOST: mariadb:3306
+      DB_USER: wordpress
+      DB_PASSWORD: evapass
+      DB_NAME: wordpress
     networks:
       - inception-network
 
@@ -43,7 +45,7 @@ services:
     depends_on:
       - wordpress
     volumes:
-      - wordpress-data:/var/www/html  # Changed to use wordpress-data
+      - wordpress-data:/var/www/html
       - ./requirements/nginx/conf:/etc/nginx/conf.d
     ports:
       - "443:443"
@@ -54,7 +56,7 @@ services:
 volumes:
   mariadb-data:
     driver: local
-  wordpress-data:  # Unified the volume for WordPress and Nginx
+  wordpress-data:
     driver: local
 
 networks:
