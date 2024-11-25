@@ -5,9 +5,13 @@ define( 'DB_PASSWORD', 'evapass' );
 define( 'DB_HOST', 'mariadb:3306' );
 define( 'DB_CHARSET', 'utf8' );
 define( 'DB_COLLATE', '' );
-define('WP_DEBUG', true);
-define('WP_DEBUG_LOG', true);
-define('WP_DEBUG_DISPLAY', true);
+define('WP_HOME', 'https://eprzybyl.42.fr');
+define('WP_SITEURL', 'https://eprzybyl.42.fr');
+define('WP_HTTP_BLOCK_EXTERNAL', false);
+define('REST_API_DISABLED', false);  // Keep it enabled but avoid warning
+define('FORCE_SSL_ADMIN', true);
+$_SERVER['HTTPS'] = 'on';
+
 
 $table_prefix = 'wp_';
 

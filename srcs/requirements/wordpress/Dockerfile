@@ -2,7 +2,7 @@
 FROM debian:bullseye
 
 # Set environment variables for WordPress installation
-ENV WORDPRESS_VERSION=5.8.3
+ENV WORDPRESS_VERSION=6.7.1
 ENV PHP_VERSION=7.4
 
 # Update the system and install dependencies
