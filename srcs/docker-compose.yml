@@ -35,6 +35,9 @@ services:
       DB_NAME: wordpress
     networks:
       - inception-network
+    extra_hosts:
+      - "eprzybyl.42.fr:172.18.0.4"
+    
 
   nginx:
     build:
