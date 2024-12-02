@@ -35,7 +35,7 @@ RUN openssl x509 -req -in /etc/nginx/ssl/nginx.csr \
 COPY conf/default.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 443 for HTTPS traffic and 80 for HTTP
-EXPOSE 443 80
+EXPOSE 443
 
 # Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
