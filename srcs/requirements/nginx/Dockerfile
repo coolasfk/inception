@@ -30,6 +30,7 @@ RUN openssl x509 -req -in /etc/nginx/ssl/nginx.csr \
         -CA /etc/nginx/ca/ca.crt -CAkey /etc/nginx/ca/ca.key -CAcreateserial \
         -out /etc/nginx/ssl/nginx.crt -days 365 -sha256
 
+        RUN cat /etc/nginx/ssl/nginx.crt /etc/nginx/ca/ca.crt > /etc/nginx/ssl/nginx.fullchain.crt
 # Copy custom Nginx configuration
 COPY conf/default.conf /etc/nginx/conf.d/default.conf
 

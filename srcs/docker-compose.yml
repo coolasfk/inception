@@ -1,10 +1,9 @@
 services:
   mariadb:
-    build:
-      context: ./requirements/mariadb
+    image: mariadb:10.5
     container_name: mariadb
     volumes:
-      - mariadb-data:/var/lib/mysql
+      - mariadb:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: evapass
       MYSQL_DATABASE: wordpress
@@ -26,9 +25,10 @@ services:
       context: ./requirements/wordpress
     container_name: wordpress
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_healthy
     volumes:
-      - wordpress-data:/var/www/html
+      - wordpress:/var/www/html
     environment:
       DB_HOST: mariadb:3306
       DB_USER: wordpress
@@ -38,7 +38,6 @@ services:
       - inception-network
     extra_hosts:
       - "eprzybyl.42.fr:172.18.0.4"
-    
 
   nginx:
     build:
@@ -47,18 +46,26 @@ services:
     depends_on:
       - wordpress
     volumes:
-      - wordpress-data:/var/www/html
+      - wordpress:/var/www/html
     ports:
       - "443:443"
-      - "80:80"
     networks:
       - inception-network
 
 volumes:
-  mariadb-data:
+  mariadb:
     driver: local
-  wordpress-data:
+    driver_opts:
+      type: none
+      device: /Users/cool_as_fk/data/mariadb
+      o: bind
+  wordpress:
     driver: local
+    driver_opts:
+      type: none
+      device: /Users/cool_as_fk/data/wp
+      o: bind
+
 
 networks:
   inception-network:
