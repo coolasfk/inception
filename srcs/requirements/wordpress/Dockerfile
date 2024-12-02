@@ -40,14 +40,18 @@ RUN mkdir -p /var/log/php && \
 RUN mkdir -p /var/www/html && \
     wget https://wordpress.org/latest.tar.gz && \
     tar -xzf latest.tar.gz -C /var/www/html --strip-components=1 && \
-    chown -R www-data:www-data /var/www/html && \
     rm latest.tar.gz
+
+# Set permissions for WordPress directory
+RUN chown -R www-data:www-data /var/www/html && \
+    chmod -R 755 /var/www/html
 
 # Update PHP-FPM configuration to listen on all interfaces (not just localhost)
 RUN sed -i 's|listen = /run/php/php7.4-fpm.sock|listen = 0.0.0.0:9000|' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf
 
-# Copy custom configuration and initialization scripts
 COPY conf/wp-config.php /tmp/wp-config.php
+RUN chmod 644 /tmp/wp-config.php
+# Copy custom initialization script
 COPY conf/init.sh /init.sh
 RUN chmod +x /init.sh
 
