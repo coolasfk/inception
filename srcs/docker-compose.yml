@@ -17,6 +17,8 @@ services:
       retries: 5
     networks:
       - inception-network
+    extra_hosts:
+    - "eprzybyl.42.fr:172.18.0.2"  # Update to MariaDB's actual container IP
 
   wordpress:
     image: custom-wordpress
@@ -26,7 +28,6 @@ services:
     depends_on:
       - mariadb
     volumes:
-      - ./requirements/wordpress/conf/wp-config.php:/var/www/html/wp-config.php
       - wordpress-data:/var/www/html
     environment:
       DB_HOST: mariadb:3306
@@ -47,7 +48,6 @@ services:
       - wordpress
     volumes:
       - wordpress-data:/var/www/html
-      - ./requirements/nginx/conf:/etc/nginx/conf.d
     ports:
       - "443:443"
       - "80:80"

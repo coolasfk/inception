@@ -20,7 +20,6 @@ RUN chmod +x /custom-entrypoint.sh
 
 # Expose MariaDB default port
 EXPOSE 3306
-EXPOSE 80
 
 # Use custom entrypoint
 ENTRYPOINT ["/custom-entrypoint.sh"]

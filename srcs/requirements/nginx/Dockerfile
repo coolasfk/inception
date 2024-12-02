@@ -1,8 +1,12 @@
 # Base image
-FROM nginx:alpine
+FROM debian:buster
 
 # Install necessary tools
-RUN apk update && apk add openssl
+RUN apt-get update && apt-get install -y \
+    nginx \
+    openssl \
+    && apt-get clean \
+    curl
 
 # Create directories for certificates
 RUN mkdir -p /etc/nginx/ssl /etc/nginx/ca
@@ -19,7 +23,7 @@ RUN openssl genrsa -out /etc/nginx/ssl/nginx.key 2048
 # Generate a certificate signing request (CSR) for the server
 RUN openssl req -new -key /etc/nginx/ssl/nginx.key \
         -out /etc/nginx/ssl/nginx.csr \
-        -subj "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=eprzybyl.42.fr"
+        -subj "/C=CH/ST=Vaud/L=City/O=Organization/OU=Unit/CN=eprzybyl"
 
 # Sign the server certificate with the root CA
 RUN openssl x509 -req -in /etc/nginx/ssl/nginx.csr \
@@ -30,8 +34,7 @@ RUN openssl x509 -req -in /etc/nginx/ssl/nginx.csr \
 COPY conf/default.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 443 for HTTPS traffic and 80 for HTTP
-EXPOSE 443
+EXPOSE 443 80
 
-
-# Start Nginx with daemon mode off to keep the container running
+# Start Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
