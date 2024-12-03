@@ -1,26 +1,26 @@
+version: '3.8'
+
 services:
   mariadb:
     image: mariadb:10.5
     container_name: mariadb
     volumes:
-      - mariadb:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: evapass
-      MYSQL_DATABASE: wordpress
-      MYSQL_USER: wordpress
-      MYSQL_PASSWORD: evapass
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=evapass"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=${MYSQL_ROOT_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - inception-network
-    extra_hosts:
-    - "eprzybyl.42.fr:172.18.0.2"  # Update to MariaDB's actual container IP
 
   wordpress:
-    image: custom-wordpress
+    image: wordpress:latest
     build:
       context: ./requirements/wordpress
     container_name: wordpress
@@ -28,16 +28,16 @@ services:
       mariadb:
         condition: service_healthy
     volumes:
-      - wordpress:/var/www/html
+      - wordpress_data:/var/www/html
     environment:
-      DB_HOST: mariadb:3306
-      DB_USER: wordpress
-      DB_PASSWORD: evapass
-      DB_NAME: wordpress
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_CHARSET: ${DB_CHARSET}
+      DB_COLLATE: ${DB_COLLATE}
     networks:
       - inception-network
-    extra_hosts:
-      - "eprzybyl.42.fr:172.18.0.4"
 
   nginx:
     build:
@@ -46,26 +46,27 @@ services:
     depends_on:
       - wordpress
     volumes:
-      - wordpress:/var/www/html
+      - wordpress_data:/var/www/html
     ports:
       - "443:443"
     networks:
-      - inception-network
+      inception-network:
+        aliases:
+          - eprzybyl.42.fr
 
 volumes:
-  mariadb:
+  mariadb_data:
     driver: local
     driver_opts:
       type: none
-      device: /Users/cool_as_fk/data/mariadb
+      device: ${MARIADB_DATA_PATH}
       o: bind
-  wordpress:
+  wordpress_data:
     driver: local
     driver_opts:
       type: none
-      device: /Users/cool_as_fk/data/wp
+      device: ${WORDPRESS_DATA_PATH}
       o: bind
-
 
 networks:
   inception-network:
